@@ -25,12 +25,15 @@ self.addEventListener('activate', (event) => {
   const cacheWhiteList = [];
   cacheWhiteList.push(CACHE_NAME);
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      cacheNames.map((cacheName) => {
-        if (!cacheWhiteList.includes(cacheName)) {
-          return caches.delete(cacheName);
-        }
-      });
-    })
+    caches.keys().then((cacheNames) =>
+      Promise.all(
+        // it takes array of promises and waits till all promises are resolved
+        cacheNames.map((cacheName) => {
+          if (!cacheWhiteList.includes(cacheName)) {
+            return caches.delete(cacheName); //returns a promise that resolves to true if cacheName is found in cache, otherwise resolves to false
+          }
+        })
+      )
+    )
   );
 });
